@@ -1,31 +1,33 @@
-// Conectar ao servidor Socket.IO
+// Aguardar o Socket.IO carregar antes de conectar
 let socket;
-
-// Aguardar o Socket.IO carregar
-function initSocket() {
-    if (typeof io !== 'undefined') {
-        socket = io();
-        console.log('🎯 Socket.IO conectado!');
-    } else {
-        console.log('Aguardando Socket.IO...');
-        setTimeout(initSocket, 100);
-    }
-}
-
-// Inicializar quando a página carregar
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSocket);
-} else {
-    initSocket();
-}
-
-// Estado do jogo
 let gameState = {
     player: null,
     room: null,
     isHost: false,
     currentScreen: 'home'
 };
+
+function initializeSocket() {
+    if (typeof io === 'undefined') {
+        console.log('Socket.IO ainda não carregou, aguardando...');
+        setTimeout(initializeSocket, 100);
+        return;
+    }
+    
+    // Conectar ao servidor Socket.IO
+    socket = io();
+    
+    // Inicializar o jogo após conectar
+    setupSocketListeners();
+    console.log('🎯 Socket.IO conectado!');
+}
+
+// Chamar a inicialização quando a página carregar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSocket);
+} else {
+    initializeSocket();
+}
 
 // Elementos DOM
 const screens = {
@@ -38,6 +40,8 @@ const screens = {
     roundTransition: document.getElementById('roundTransitionScreen'),
     ranking: document.getElementById('rankingScreen')
 };
+
+function setupSocketListeners() {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
@@ -190,10 +194,11 @@ function setupEventListeners() {
     });
 }
 
-// Socket event listeners
-socket.on('playerCreated', (data) => {
-    gameState.player = data;
-});
+function setupSocketListeners() {
+    // Socket event listeners
+    socket.on('playerCreated', (data) => {
+        gameState.player = data;
+    });
 
 socket.on('roomCreated', (data) => {
     gameState.room = data;
@@ -657,13 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 100);
 });
 
-// Prevenir saída acidental durante o jogo
-window.addEventListener('beforeunload', (e) => {
-    if (gameState.currentScreen === 'game' || gameState.currentScreen === 'voting') {
-        e.preventDefault();
-        e.returnValue = 'Você tem certeza que deseja sair durante o jogo?';
-        return e.returnValue;
-    }
-});
+// Fechar a função setupSocketListeners
+}
 
-console.log('🎯 Adedonha Online - Cliente carregado!');
+// Inicialização
