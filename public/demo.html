@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adedonha Online - Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="title">🎯 Adedonha Online</h1>
+                <p class="subtitle">Jogue com seus amigos em tempo real!</p>
+            </div>
+            
+            <!-- Aviso principal sobre Vercel -->
+            <div style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; border-radius: 15px; padding: 30px; margin: 20px 0; text-align: center; box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);">
+                <h2 style="margin: 0 0 15px 0; font-size: 24px;">⚠️ Limitação da Vercel Detectada</h2>
+                <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">
+                    A <strong>Vercel</strong> não suporta adequadamente aplicações <strong>Socket.IO</strong> devido ao modelo de funções serverless.<br>
+                    WebSockets não funcionam corretamente, causando falhas na conexão em tempo real.
+                </p>
+                
+                <div style="background: rgba(255,255,255,0.2); border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <h3 style="margin: 0 0 15px 0;">🚀 Soluções Recomendadas:</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                            <strong>🚂 Railway</strong><br>
+                            <small>Melhor opção - 100% compatível</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                            <strong>🌐 Render</strong><br>
+                            <small>Gratuito com WebSockets</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                            <strong>⚡ Heroku</strong><br>
+                            <small>Clássico e confiável</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="margin: 15px 0 0 0; font-size: 14px; opacity: 0.9;">
+                    💡 <strong>Dica:</strong> O código funciona perfeitamente local. Execute <code>npm start</code> para testar.
+                </p>
+            </div>
+
+            <!-- Formulário desabilitado -->
+            <div class="form-card" style="opacity: 0.6; pointer-events: none;">
+                <div style="text-align: center; margin-bottom: 20px; color: #666;">
+                    <p><strong>Interface Desabilitada</strong><br>Socket.IO não funcional na Vercel</p>
+                </div>
+                
+                <div class="input-group">
+                    <label for="nicknameInput">Seu nickname</label>
+                    <input type="text" id="nicknameInput" placeholder="Digite seu nickname" maxlength="20" disabled>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" disabled>
+                        <span class="btn-icon">🎮</span>
+                        Criar Sala
+                    </button>
+                    <button class="btn btn-secondary" disabled>
+                        <span class="btn-icon">🔍</span>
+                        Encontrar Sala
+                    </button>
+                </div>
+            </div>
+
+            <!-- Instruções de deploy -->
+            <div style="background: #f8f9fa; border-radius: 10px; padding: 25px; margin: 20px 0; border-left: 4px solid #28a745;">
+                <h3 style="margin: 0 0 15px 0; color: #28a745;">📋 Como Fazer Deploy Correto:</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 10px 0;">1. Railway (Recomendado):</h4>
+                    <ol style="margin: 0; padding-left: 20px;">
+                        <li>Acesse <a href="https://railway.app" target="_blank" style="color: #007bff;">railway.app</a></li>
+                        <li>Faça login com GitHub</li>
+                        <li>Clique em "New Project" → "Deploy from GitHub repo"</li>
+                        <li>Selecione seu repositório</li>
+                        <li>Deploy automático! 🎉</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <h4 style="margin: 0 0 10px 0;">2. Render:</h4>
+                    <ol style="margin: 0; padding-left: 20px;">
+                        <li>Acesse <a href="https://render.com" target="_blank" style="color: #007bff;">render.com</a></li>
+                        <li>Conecte GitHub</li>
+                        <li>"New Web Service"</li>
+                        <li>Build Command: <code>npm install</code></li>
+                        <li>Start Command: <code>npm start</code></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Link para repositório -->
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="color: #666; margin-bottom: 10px;">Código fonte disponível no GitHub:</p>
+                <a href="https://github.com/vashxd/stop" target="_blank" style="display: inline-block; background: #24292e; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+                    📁 Ver Repositório
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎯 Adedonha Online - Demo na Vercel');
+        console.log('⚠️ Funcionalidade limitada devido às restrições da plataforma');
+        console.log('💡 Para versão completa, use Railway ou Render');
+        
+        // Mostrar mensagem no console sobre as limitações
+        console.group('🚀 Soluções Recomendadas:');
+        console.log('1. Railway: https://railway.app (Melhor opção)');
+        console.log('2. Render: https://render.com (Gratuito)');
+        console.log('3. Heroku: https://heroku.com (Clássico)');
+        console.groupEnd();
+    </script>
+</body>
+</html>

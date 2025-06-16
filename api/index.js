@@ -1,80 +1,92 @@
 const express = require('express');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
 const path = require('path');
 
 const app = express();
-const httpServer = createServer(app);
-
-// Configuração do Socket.IO para Vercel
-const io = new Server(httpServer, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    },
-    transports: ['polling'], // Apenas polling para Vercel
-    allowEIO3: true
-});
 
 // Servir arquivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Rota principal
+// Rota principal - servir página de demo para Vercel
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    // Detectar se está na Vercel
+    const isVercel = req.headers.host && req.headers.host.includes('vercel.app');
+    
+    if (isVercel) {
+        // Servir página de demo explicando limitações
+        res.sendFile(path.join(__dirname, '..', 'public', 'demo.html'));
+    } else {
+        // Servir página normal para desenvolvimento local
+        res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    }
 });
 
 // Rota de health check
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'ok', 
-        environment: 'vercel',
-        timestamp: new Date().toISOString() 
+        environment: process.env.VERCEL ? 'vercel' : 'local',
+        timestamp: new Date().toISOString(),
+        message: 'Socket.IO não disponível na Vercel - use Railway ou Render'
     });
 });
 
-// Dados em memória (limitado para Vercel)
-const rooms = new Map();
-const players = new Map();
-
-// Categorias padrão
-const DEFAULT_CATEGORIES = [
-    'Nome próprio',
-    'Animal', 
-    'Objeto',
-    'Cor',
-    'Comida',
-    'País/Cidade',
-    'Profissão'
-];
-
-// Socket.IO connections (limitado para Vercel)
-io.on('connection', (socket) => {
-    console.log('Cliente conectado:', socket.id);
-    
-    socket.on('createPlayer', (nickname) => {
-        const player = {
-            id: socket.id,
-            nickname: nickname,
-            socketId: socket.id
-        };
-        players.set(socket.id, player);
-        socket.emit('playerCreated', player);
+// Rota para informações da plataforma
+app.get('/platform-info', (req, res) => {
+    res.json({
+        platform: 'Vercel',
+        socketIOSupport: false,
+        limitations: [
+            'Funções serverless não mantêm estado',
+            'WebSockets não funcionam adequadamente',
+            'Timeout de 10 segundos por função',
+            'Memória não compartilhada entre requisições'
+        ],
+        recommendations: [
+            {
+                name: 'Railway',
+                url: 'https://railway.app',
+                reason: 'Melhor suporte a WebSockets',
+                free: true
+            },
+            {
+                name: 'Render',
+                url: 'https://render.com',
+                reason: 'Plano gratuito com WebSockets',
+                free: true
+            },
+            {
+                name: 'Heroku',
+                url: 'https://heroku.com',
+                reason: 'Clássico para Node.js',
+                free: false
+            }
+        ]
     });
+});
 
-    socket.on('disconnect', () => {
-        console.log('Cliente desconectado:', socket.id);
-        players.delete(socket.id);
+// Rota fallback para Socket.IO (retorna erro explicativo)
+app.get('/socket.io/*', (req, res) => {
+    res.status(503).json({
+        error: 'Socket.IO não disponível na Vercel',
+        reason: 'Funções serverless não suportam WebSockets persistentes',
+        solution: 'Use Railway, Render ou Heroku para funcionalidade completa'
     });
 });
 
 const PORT = process.env.PORT || 3000;
 
-// Para desenvolvimento local
-if (process.env.NODE_ENV !== 'production') {
-    httpServer.listen(PORT, () => {
-        console.log(`🎯 Servidor rodando na porta ${PORT}`);
-    });
+// Para desenvolvimento local, carregue o servidor completo
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    try {
+        const fullServer = require('../server.js');
+        console.log('🎯 Servidor completo carregado para desenvolvimento local');
+    } catch (error) {
+        console.log('📦 Servidor estático carregado (sem Socket.IO)');
+        app.listen(PORT, () => {
+            console.log(`� Servidor rodando na porta ${PORT}`);
+            console.log('⚠️ Socket.IO não disponível neste modo');
+        });
+    }
 }
 
 // Export para Vercel
