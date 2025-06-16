@@ -15,11 +15,19 @@
 <body>
     <div id="app">        <!-- Tela inicial -->
         <div id="homeScreen" class="screen active">
-            <div class="container">
-                <div class="hero-section">
+            <div class="container">                <div class="hero-section">
                     <h1 class="title">🎯 Adedonha Online</h1>
                     <p class="subtitle">Jogue com seus amigos em tempo real!</p>
                 </div>
+                
+                <!-- Aviso para Vercel -->
+                <div id="platform-warning" style="display: none; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
+                    <p style="margin: 0; color: #856404;">
+                        <strong>⚠️ Você está na Vercel</strong><br>
+                        Socket.IO pode não funcionar adequadamente. Para melhor experiência, recomendamos <strong>Railway</strong> ou <strong>Render</strong>.
+                    </p>
+                </div>
+                
                 <div class="form-card">
                     <div class="input-group">
                         <label for="nicknameInput">Seu nickname</label>

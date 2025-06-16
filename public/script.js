@@ -1,22 +1,103 @@
 // Conectar ao servidor Socket.IO
 let socket;
+let isVercelEnvironment = window.location.hostname.includes('vercel.app');
 
 // Aguardar o Socket.IO carregar
 function initSocket() {
     if (typeof io !== 'undefined') {
-        socket = io();
-        console.log('🎯 Socket.IO conectado!');
+        try {
+            socket = io({
+                transports: ['websocket', 'polling'],
+                timeout: 5000,
+                forceNew: true
+            });
+
+            socket.on('connect', () => {
+                console.log('🎯 Socket.IO conectado!');
+                hideConnectionWarning();
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Erro de conexão Socket.IO:', error);
+                if (isVercelEnvironment) {
+                    showVercelWarning();
+                }
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Socket.IO desconectado');
+                if (isVercelEnvironment) {
+                    showVercelWarning();
+                }
+            });
+
+        } catch (error) {
+            console.error('Erro ao inicializar Socket.IO:', error);
+            if (isVercelEnvironment) {
+                showVercelWarning();
+            }
+        }
     } else {
         console.log('Aguardando Socket.IO...');
         setTimeout(initSocket, 100);
     }
 }
 
+// Mostrar aviso sobre limitações da Vercel
+function showVercelWarning() {
+    const warningDiv = document.createElement('div');
+    warningDiv.id = 'vercel-warning';
+    warningDiv.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #ff6b6b;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        z-index: 9999;
+        font-family: 'Poppins', sans-serif;
+    `;
+    warningDiv.innerHTML = `
+        <strong>⚠️ Limitação da Vercel Detectada</strong><br>
+        Socket.IO não funciona adequadamente na Vercel devido às funções serverless.<br>
+        <strong>Recomendação:</strong> Use Railway, Render ou Heroku para melhor performance.
+        <button onclick="this.parentElement.style.display='none'" style="margin-left: 10px; padding: 5px 10px; background: white; color: #ff6b6b; border: none; border-radius: 3px; cursor: pointer;">Fechar</button>
+    `;
+    
+    if (!document.getElementById('vercel-warning')) {
+        document.body.appendChild(warningDiv);
+    }
+}
+
+// Esconder aviso
+function hideConnectionWarning() {
+    const warning = document.getElementById('vercel-warning');
+    if (warning) {
+        warning.style.display = 'none';
+    }
+}
+
 // Inicializar quando a página carregar
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSocket);
+    document.addEventListener('DOMContentLoaded', () => {
+        checkPlatform();
+        initSocket();
+    });
 } else {
+    checkPlatform();
     initSocket();
+}
+
+// Verificar se está na Vercel e mostrar aviso
+function checkPlatform() {
+    if (isVercelEnvironment) {
+        const warning = document.getElementById('platform-warning');
+        if (warning) {
+            warning.style.display = 'block';
+        }
+    }
 }
 
 // Estado do jogo
