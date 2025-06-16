@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Adedonha Online</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="app">        <!-- Tela inicial -->
+        <div id="homeScreen" class="screen active">
+            <div class="container">
+                <div class="hero-section">
+                    <h1 class="title">🎯 Adedonha Online</h1>
+                    <p class="subtitle">Jogue com seus amigos em tempo real!</p>
+                </div>
+                <div class="form-card">
+                    <div class="input-group">
+                        <label for="nicknameInput">Seu nickname</label>
+                        <input type="text" id="nicknameInput" placeholder="Digite seu nickname" maxlength="20">
+                    </div>
+                    <div class="button-group">
+                        <button id="createRoomBtn" class="btn btn-primary">
+                            <span class="btn-icon">🎮</span>
+                            Criar Sala
+                        </button>
+                        <button id="findRoomBtn" class="btn btn-secondary">
+                            <span class="btn-icon">🔍</span>
+                            Encontrar Sala
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Tela de criação de sala -->
+        <div id="createRoomScreen" class="screen">
+            <div class="container">
+                <div class="screen-header">
+                    <button id="backFromCreateBtn" class="btn-back">←</button>
+                    <h2>Criar Nova Sala</h2>
+                </div>
+                <div class="form-card">
+                    <div class="input-group">
+                        <label for="roomNameInput">Nome da sala</label>
+                        <input type="text" id="roomNameInput" placeholder="Ex: Sala dos Amigos" maxlength="30">
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="privateRoomCheckbox">
+                        <span class="checkmark"></span>
+                        <span class="checkbox-text">🔒 Sala privada</span>
+                    </label>
+                    <div class="button-group">
+                        <button id="confirmCreateRoomBtn" class="btn btn-primary">
+                            <span class="btn-icon">✨</span>
+                            Criar Sala
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Tela de busca de salas -->
+        <div id="findRoomScreen" class="screen">
+            <div class="container">
+                <div class="screen-header">
+                    <button id="backFromFindBtn" class="btn-back">←</button>
+                    <h2>Encontrar Sala</h2>
+                </div>
+                <div class="form-card">
+                    <div class="search-section">
+                        <div class="input-group">
+                            <label for="roomCodeInput">Código da sala privada</label>
+                            <div class="input-with-button">
+                                <input type="text" id="roomCodeInput" placeholder="Digite o código">
+                                <button id="searchRoomBtn" class="btn btn-search">🔍</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="divider">ou escolha uma sala pública</div>
+                    
+                    <div class="public-rooms-section">
+                        <div class="section-header">
+                            <h3>Salas Públicas</h3>
+                            <button id="refreshRoomsBtn" class="btn btn-refresh">🔄</button>
+                        </div>
+                        <div id="publicRoomsList" class="rooms-list">
+                            <div class="loading">Carregando salas...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Tela da sala -->
+        <div id="roomScreen" class="screen">
+            <div class="container">
+                <div class="room-header">
+                    <div class="room-title-section">
+                        <h2 id="roomTitle">Sala</h2>
+                        <div class="room-info">
+                            <div class="room-code-badge">
+                                <span id="roomCode">Código: </span>
+                            </div>
+                            <div class="game-phase-badge">
+                                <span id="gamePhase">Aguardando jogadores...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room-content">
+                    <div class="room-section players-section">
+                        <div class="section-header">
+                            <h3>👥 Jogadores</h3>
+                            <span id="playerCount" class="count-badge">0</span>
+                        </div>
+                        <div id="playersList" class="players-list"></div>
+                    </div>
+
+                    <div class="room-section categories-section" id="categoriesSection">
+                        <div class="section-header">
+                            <h3>📝 Categorias</h3>
+                        </div>
+                        <div id="categoriesList" class="categories-list"></div>
+                        <div id="addCategorySection" class="add-category" style="display: none;">
+                            <input type="text" id="newCategoryInput" placeholder="Ex: Animais, Cores..." maxlength="30">
+                            <button id="addCategoryBtn" class="btn btn-small">➕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <button id="startGameBtn" class="btn btn-primary btn-large" style="display: none;">
+                        <span class="btn-icon">🚀</span>
+                        Iniciar Jogo
+                    </button>
+                    <button id="nextRoundBtn" class="btn btn-primary btn-large" style="display: none;">
+                        <span class="btn-icon">⏭️</span>
+                        Próxima Rodada
+                    </button>
+                    <button id="endGameBtn" class="btn btn-danger btn-large" style="display: none;">
+                        <span class="btn-icon">🏁</span>
+                        Encerrar Jogo
+                    </button>
+                </div>
+            </div>
+        </div>        <!-- Tela de jogo - Fase de escrita -->
+        <div id="gameScreen" class="screen">
+            <div class="container">
+                <div class="game-header">
+                    <div class="letter-display">
+                        <span class="letter-label">LETRA</span>
+                        <h2 id="currentLetter">-</h2>
+                    </div>
+                    <div class="game-info">
+                        <div class="status-item">
+                            <span class="status-icon">⏱️</span>
+                            <span id="gameStatus">Escrevendo respostas...</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-icon">👥</span>
+                            <span id="playersAnswered">0/0 responderam</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="answers-form" id="answersForm">
+                    <div id="categoriesInputs" class="categories-inputs"></div>
+                    <div class="stop-section">
+                        <button id="stopBtn" class="btn-stop" disabled>
+                            <span class="btn-icon">✋</span>
+                            <span class="btn-text">Preencha pelo menos uma categoria</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Tela de votação -->
+        <div id="votingScreen" class="screen">
+            <div class="container">
+                <div class="voting-header">
+                    <h2>⚖️ Votação</h2>
+                    <div class="voting-progress">
+                        <div class="voting-info-item">
+                            <span class="voting-label">Jogador:</span>
+                            <span id="votingPlayer" class="voting-value">-</span>
+                        </div>
+                        <div class="voting-info-item">
+                            <span class="voting-label">Categoria:</span>
+                            <span id="votingCategory" class="voting-value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="voting-content">
+                    <div class="answer-display">
+                        <div class="answer-label">Resposta:</div>
+                        <div id="votingAnswer" class="answer-text">-</div>
+                    </div>
+
+                    <div class="voting-question">
+                        <p>Esta resposta é válida?</p>
+                    </div>
+
+                    <div class="voting-buttons">
+                        <button id="validBtn" class="btn btn-success btn-vote">
+                            <span class="btn-icon">✅</span>
+                            <span class="btn-text">VÁLIDA</span>
+                        </button>
+                        <button id="invalidBtn" class="btn btn-danger btn-vote">
+                            <span class="btn-icon">❌</span>
+                            <span class="btn-text">INVÁLIDA</span>
+                        </button>
+                    </div>
+
+                    <div class="voting-info">
+                        <span id="votingProgress">Aguardando votos...</span>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Tela de transição entre rodadas -->
+        <div id="roundTransitionScreen" class="screen">
+            <div class="container">
+                <div class="transition-header">
+                    <h2>🏆 Rodada Finalizada</h2>
+                    <div class="transition-info">
+                        <span id="roundStatus">Calculando pontuação...</span>
+                    </div>
+                </div>
+
+                <div class="transition-content">
+                    <div class="current-scores">
+                        <h3>📊 Pontuação Atual</h3>
+                        <div id="currentScoresList" class="scores-display"></div>
+                    </div>
+
+                    <div class="next-round-info">
+                        <div class="countdown-section">
+                            <p id="nextRoundMessage">Próxima rodada em</p>
+                            <div id="countdown" class="countdown-timer">3</div>
+                        </div>
+                        
+                        <div class="round-controls" id="hostRoundControls" style="display: none;">
+                            <button id="continueGameBtn" class="btn btn-primary btn-large">
+                                <span class="btn-icon">▶️</span>
+                                Continuar Jogo
+                            </button>
+                            <button id="endGameNowBtn" class="btn btn-danger btn-large">
+                                <span class="btn-icon">🔄</span>
+                                Resetar e Voltar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        <!-- Tela de ranking final -->
+        <div id="rankingScreen" class="screen">
+            <div class="container">
+                <div class="ranking-header">
+                    <h2>🏆 Ranking Final</h2>
+                    <div class="ranking-subtitle">Parabéns aos vencedores!</div>
+                </div>
+                <div id="rankingList" class="ranking-list"></div>
+                <div class="button-group">
+                    <button id="playAgainBtn" class="btn btn-primary btn-large">
+                        <span class="btn-icon">🎮</span>
+                        Jogar Novamente
+                    </button>
+                    <button id="backToMenuBtn" class="btn btn-secondary btn-large">
+                        <span class="btn-icon">🏠</span>
+                        Menu Principal
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scoreboard flutuante -->
+        <div id="scoreboard" class="scoreboard" style="display: none;">
+            <h4>Pontuação</h4>
+            <div id="scoresList" class="scores-list"></div>
+        </div>
+    </div>
+
+    <!-- Modal de notificações -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="notificationText"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

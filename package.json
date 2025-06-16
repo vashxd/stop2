@@ -1,0 +1,24 @@
+{
+  "name": "adedonha-online",
+  "version": "1.0.0",
+  "description": "Jogo Adedonha/Stop online em tempo real",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["adedonha", "stop", "jogo", "online", "tempo-real"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1",
+    "uuid": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
