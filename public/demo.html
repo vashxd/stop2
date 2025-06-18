@@ -14,36 +14,37 @@
                 <h1 class="title">🎯 Adedonha Online</h1>
                 <p class="subtitle">Jogue com seus amigos em tempo real!</p>
             </div>
-            
-            <!-- Aviso principal sobre Vercel -->
+              <!-- Aviso principal sobre Vercel -->
             <div style="background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white; border-radius: 15px; padding: 30px; margin: 20px 0; text-align: center; box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);">
-                <h2 style="margin: 0 0 15px 0; font-size: 24px;">⚠️ Limitação da Vercel Detectada</h2>
+                <h2 style="margin: 0 0 15px 0; font-size: 24px;">✅ Aplicação Funcionando na Vercel!</h2>
                 <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">
-                    A <strong>Vercel</strong> não suporta adequadamente aplicações <strong>Socket.IO</strong> devido ao modelo de funções serverless.<br>
-                    WebSockets não funcionam corretamente, causando falhas na conexão em tempo real.
+                    O servidor está <strong>online</strong> e respondendo corretamente.<br>
+                    Porém, a <strong>Vercel não suporta WebSockets/Socket.IO</strong> adequadamente para jogos em tempo real.
                 </p>
                 
                 <div style="background: rgba(255,255,255,0.2); border-radius: 10px; padding: 20px; margin: 20px 0;">
-                    <h3 style="margin: 0 0 15px 0;">🚀 Soluções Recomendadas:</h3>
+                    <h3 style="margin: 0 0 15px 0;">🚀 Para Jogar - Use Estas Plataformas:</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
                         <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
                             <strong>🚂 Railway</strong><br>
-                            <small>Melhor opção - 100% compatível</small>
+                            <small>Deploy gratuito - 100% compatível</small>
                         </div>
                         <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
                             <strong>🌐 Render</strong><br>
-                            <small>Gratuito com WebSockets</small>
+                            <small>Plano gratuito com WebSockets</small>
                         </div>
                         <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
-                            <strong>⚡ Heroku</strong><br>
-                            <small>Clássico e confiável</small>
+                            <strong>💻 Local</strong><br>
+                            <small>Execute: npm start</small>
                         </div>
                     </div>
                 </div>
                 
-                <p style="margin: 15px 0 0 0; font-size: 14px; opacity: 0.9;">
-                    💡 <strong>Dica:</strong> O código funciona perfeitamente local. Execute <code>npm start</code> para testar.
-                </p>
+                <div style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <p style="margin: 0; font-size: 14px;">
+                        ℹ️ <strong>Status atual:</strong> <span id="serverStatus">Verificando...</span>
+                    </p>
+                </div>
             </div>
 
             <!-- Formulário desabilitado -->
@@ -103,18 +104,39 @@
                 </a>
             </div>
         </div>
-    </div>
-
-    <script>
+    </div>    <script>
         console.log('🎯 Adedonha Online - Demo na Vercel');
-        console.log('⚠️ Funcionalidade limitada devido às restrições da plataforma');
+        console.log('✅ Servidor respondendo - Socket.IO não disponível');
         console.log('💡 Para versão completa, use Railway ou Render');
         
-        // Mostrar mensagem no console sobre as limitações
+        // Testar conectividade com a API
+        async function checkServerStatus() {
+            const statusElement = document.getElementById('serverStatus');
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusElement.textContent = `✅ Online - ${data.message}`;
+                    statusElement.style.color = '#4CAF50';
+                } else {
+                    statusElement.textContent = `⚠️ Parcial - Código: ${response.status}`;
+                    statusElement.style.color = '#FFC107';
+                }
+            } catch (error) {
+                statusElement.textContent = `❌ Offline - ${error.message}`;
+                statusElement.style.color = '#F44336';
+            }
+        }
+        
+        // Verificar status quando a página carregar
+        document.addEventListener('DOMContentLoaded', checkServerStatus);
+        
+        // Mostrar informações no console
         console.group('🚀 Soluções Recomendadas:');
         console.log('1. Railway: https://railway.app (Melhor opção)');
         console.log('2. Render: https://render.com (Gratuito)');
-        console.log('3. Heroku: https://heroku.com (Clássico)');
+        console.log('3. Local: npm start (Para desenvolvimento)');
         console.groupEnd();
     </script>
 </body>

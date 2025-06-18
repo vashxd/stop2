@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+*.log
+README.md
+DEPLOY.md
+VERCEL-*.md
+server.js
+public/script.js.backup
